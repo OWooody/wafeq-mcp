@@ -1,0 +1,72 @@
+---
+description: MCP server architecture and implementation standards for the Wafeq MCP project
+alwaysApply: true
+---
+
+# MCP Server Standards
+
+This project is an MCP (Model Context Protocol) server for Wafeq accounting software. All code must follow the official MCP SDK patterns.
+
+## SDK & Transport
+
+- Use `@modelcontextprotocol/sdk` — the official TypeScript SDK
+- Use `McpServer` from `@modelcontextprotocol/sdk/server/mcp.js`
+- Use `StdioServerTransport` from `@modelcontextprotocol/sdk/server/stdio.js`
+- The server runs locally via STDIO (not HTTP)
+
+## Tool Registration
+
+Register tools with `server.tool()` using Zod schemas for input validation:
+
+```typescript
+server.tool(
+  "wafeq_list_invoices",                    // snake_case, prefixed with wafeq_
+  "List invoices from Wafeq with filters",  // clear description for LLM
+  { status: z.enum(["DRAFT", "SENT", "FINALIZED"]).optional() },
+  async (params) => {
+    const result = await client.listInvoices(params);
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+```
+
+## Architecture Rules
+
+- **Thin tools, fat client**: Tool files validate inputs and delegate to `WafeqClient`. No HTTP logic in tool files.
+- **Single API client**: All Wafeq HTTP calls go through `src/wafeq-client.ts`.
+- **Auth via env var**: Read `WAFEQ_API_KEY` from environment. Never hardcode keys.
+- **Read-only by default**: Only implement GET endpoints unless explicitly asked for write operations.
+- **Tool naming**: `wafeq_<verb>_<resource>` in snake_case (e.g. `wafeq_list_accounts`, `wafeq_get_trial_balance`).
+
+## Response Format
+
+Tool handlers must always return the MCP content format:
+
+```typescript
+return {
+  content: [{ type: "text", text: JSON.stringify(data, null, 2) }]
+};
+```
+
+For errors, return `isError: true`:
+
+```typescript
+return {
+  isError: true,
+  content: [{ type: "text", text: `Error: ${error.message}` }]
+};
+```
+
+## Wafeq API Client
+
+- Base URL: `https://api.wafeq.com/v1`
+- Auth header: `Authorization: Api-Key <key>`
+- All list endpoints are paginated with `page` and `page_size` query params
+- Pass filters as query parameters, omitting undefined values
+
+## Testing
+
+Test with the MCP Inspector:
+```bash
+npx @modelcontextprotocol/inspector node dist/index.js
+```
