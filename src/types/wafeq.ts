@@ -5,6 +5,12 @@ export interface PaginatedResponse<T> {
   results: T[];
 }
 
+export interface CursorPaginatedResponse<T> {
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
 export interface Account {
   id: string;
   account_code: string;
@@ -477,6 +483,61 @@ export interface Contact {
   tax_registration_number?: string;
   relationship?: string[];
   company_identification?: CompanyIdentification[];
+  attachments?: string[];
+  created_ts: string;
+  modified_ts: string;
+}
+
+// --- Journal Line Items ---
+
+export interface JournalLineItem {
+  id: string;
+  journal: string;
+  account: string;
+  contact?: string;
+  description: string;
+  amount: number;
+  amount_to_bcy: number;
+  currency: string;
+  tax_rate?: string;
+  item?: string;
+  branch?: string | null;
+  project?: string | null;
+  cost_center?: string;
+  created_ts: string;
+  modified_ts: string;
+}
+
+// --- Manual Journals ---
+
+export interface ManualJournalLineItem {
+  id: string;
+  manual_journal: string;
+  account: string;
+  contact?: string;
+  description: string;
+  amount: number;
+  amount_to_bcy: number;
+  currency: string;
+  exchange_rate: number;
+  tax_rate?: string;
+  tax_amount?: number;
+  branch?: string | null;
+  project?: string | null;
+  cost_center?: string;
+  place_of_supply?: string;
+  created_ts: string;
+  modified_ts: string;
+}
+
+export interface ManualJournal {
+  id: string;
+  serial_number: string;
+  date: string;
+  reference?: string;
+  notes?: string;
+  tax_amount_type: string;
+  line_items: ManualJournalLineItem[];
   attachments?: string[];
   created_ts: string;
   modified_ts: string;

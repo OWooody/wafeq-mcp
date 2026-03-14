@@ -1,4 +1,5 @@
 import type {
+  CursorPaginatedResponse,
   PaginatedResponse,
   Account,
   BalanceSheetReport,
@@ -9,6 +10,8 @@ import type {
   DebitNote,
   Expense,
   Invoice,
+  JournalLineItem,
+  ManualJournal,
   Payment,
   ProfitLossReport,
   TrialBalanceReport,
@@ -165,5 +168,23 @@ export class WafeqClient {
     params?: Record<string, string | undefined>,
   ): Promise<PaginatedResponse<Contact>> {
     return this.request<PaginatedResponse<Contact>>("/contacts/", params);
+  }
+
+  async listJournalLineItems(
+    params?: Record<string, string | undefined>,
+  ): Promise<CursorPaginatedResponse<JournalLineItem>> {
+    return this.request<CursorPaginatedResponse<JournalLineItem>>(
+      "/journal-line-items/",
+      params,
+    );
+  }
+
+  async listManualJournals(
+    params?: Record<string, string | undefined>,
+  ): Promise<PaginatedResponse<ManualJournal>> {
+    return this.request<PaginatedResponse<ManualJournal>>(
+      "/manual-journals/",
+      params,
+    );
   }
 }
