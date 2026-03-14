@@ -20,6 +20,7 @@ export function registerInvoiceTools(
         .describe("Filter by contact (customer) ID"),
       invoice_date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Filter by invoice date (YYYY-MM-DD)"),
       branch: z.string().optional().describe("Filter by branch ID"),

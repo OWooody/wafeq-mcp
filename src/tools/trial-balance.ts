@@ -12,10 +12,12 @@ export function registerTrialBalanceTools(
     {
       from_date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Report start date (YYYY-MM-DD)"),
       to_date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Report end date (YYYY-MM-DD)"),
       with_pnl_openings: z

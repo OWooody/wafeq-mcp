@@ -12,10 +12,12 @@ export function registerManualJournalTools(
     {
       date_after: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Journals from this date (YYYY-MM-DD)"),
       date_before: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Journals up to this date (YYYY-MM-DD)"),
       reference: z.string().optional().describe("Filter by reference"),

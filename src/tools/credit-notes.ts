@@ -17,6 +17,7 @@ export function registerCreditNoteTools(
       contact: z.string().optional().describe("Filter by contact ID"),
       credit_note_date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Filter by credit note date (YYYY-MM-DD)"),
       branch: z.string().optional().describe("Filter by branch ID"),

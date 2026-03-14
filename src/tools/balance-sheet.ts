@@ -12,6 +12,7 @@ export function registerBalanceSheetTools(
     {
       date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .describe("Report date (YYYY-MM-DD), must be the last day of a month/year"),
       period_count: z
         .number()

@@ -12,9 +12,11 @@ export function registerProfitLossTools(
     {
       date_after: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .describe("Period start date (YYYY-MM-DD), must be the first day of a month/year"),
       date_before: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .describe("Period end date (YYYY-MM-DD), must be the last day of a month/year"),
       group_by: z
         .enum(["month", "year"])

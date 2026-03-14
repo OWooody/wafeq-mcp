@@ -26,10 +26,12 @@ export function registerJournalLineItemTools(
         .describe("Filter by currency code (e.g. SAR, AED, USD)"),
       date_after: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Line items from this date (YYYY-MM-DD)"),
       date_before: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Line items up to this date (YYYY-MM-DD)"),
       cursor: z

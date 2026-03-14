@@ -13,6 +13,7 @@ export function registerPaymentTools(
       contact: z.string().optional().describe("Filter by contact ID"),
       date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Filter by payment date (YYYY-MM-DD)"),
       paid_through_account: z

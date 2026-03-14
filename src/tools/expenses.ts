@@ -15,6 +15,7 @@ export function registerExpenseTools(
       branch: z.string().optional().describe("Filter by branch ID"),
       date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Filter by expense date (YYYY-MM-DD)"),
       paid_through_account: z

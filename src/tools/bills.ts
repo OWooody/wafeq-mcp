@@ -12,10 +12,12 @@ export function registerBillTools(
     {
       bill_date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Filter by bill date (YYYY-MM-DD)"),
       bill_due_date: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
         .optional()
         .describe("Filter by bill due date (YYYY-MM-DD)"),
       contact: z
