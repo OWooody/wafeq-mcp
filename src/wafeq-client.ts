@@ -1,10 +1,16 @@
 import type {
   PaginatedResponse,
   Account,
+  BalanceSheetReport,
   BankAccount,
   Bill,
+  Contact,
+  CreditNote,
+  DebitNote,
   Expense,
   Invoice,
+  Payment,
+  ProfitLossReport,
   TrialBalanceReport,
 } from "./types/wafeq.js";
 
@@ -111,5 +117,53 @@ export class WafeqClient {
       "/reports/trial-balance/",
       params,
     );
+  }
+
+  async getProfitLoss(
+    params?: Record<string, string | undefined>,
+  ): Promise<ProfitLossReport> {
+    return this.request<ProfitLossReport>(
+      "/reports/profit-and-loss/",
+      params,
+    );
+  }
+
+  async getBalanceSheet(
+    params?: Record<string, string | undefined>,
+  ): Promise<BalanceSheetReport> {
+    return this.request<BalanceSheetReport>(
+      "/reports/balance-sheet/",
+      params,
+    );
+  }
+
+  async listPayments(
+    params?: Record<string, string | undefined>,
+  ): Promise<PaginatedResponse<Payment>> {
+    return this.request<PaginatedResponse<Payment>>("/payments/", params);
+  }
+
+  async listCreditNotes(
+    params?: Record<string, string | undefined>,
+  ): Promise<PaginatedResponse<CreditNote>> {
+    return this.request<PaginatedResponse<CreditNote>>(
+      "/credit-notes/",
+      params,
+    );
+  }
+
+  async listDebitNotes(
+    params?: Record<string, string | undefined>,
+  ): Promise<PaginatedResponse<DebitNote>> {
+    return this.request<PaginatedResponse<DebitNote>>(
+      "/debit-notes/",
+      params,
+    );
+  }
+
+  async listContacts(
+    params?: Record<string, string | undefined>,
+  ): Promise<PaginatedResponse<Contact>> {
+    return this.request<PaginatedResponse<Contact>>("/contacts/", params);
   }
 }
