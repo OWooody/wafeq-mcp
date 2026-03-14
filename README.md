@@ -1,6 +1,6 @@
 # Wafeq MCP Server
 
-An MCP (Model Context Protocol) server that connects AI assistants to the [Wafeq](https://wafeq.com) accounting software API. Provides read-only access to accounts, bank accounts, bills, expenses, invoices, and trial balance reports.
+An MCP (Model Context Protocol) server that connects AI assistants to the [Wafeq](https://wafeq.com) accounting software API. Provides read-only access to accounts, contacts, invoices, bills, expenses, credit/debit notes, payments, manual journals, journal line items, and financial reports.
 
 ## Prerequisites
 
@@ -48,8 +48,16 @@ This opens a browser-based UI where you can list tools, invoke them with custom 
 | `wafeq_list_accounts` | List chart of accounts. Filter by classification, payment-enabled, or system accounts. |
 | `wafeq_list_bank_accounts` | List bank accounts. Filter by type (BANK, PETTY_CASH, CREDIT_CARD) or currency. |
 | `wafeq_list_bills` | List bills (purchase invoices). Filter by date, contact, branch, project, or reference. |
+| `wafeq_list_contacts` | List contacts (customers, suppliers, partners). Filter by keyword, relationship type, or country. |
+| `wafeq_list_credit_notes` | List credit notes (adjustments/refunds against invoices). Filter by status, contact, date, branch, or project. |
+| `wafeq_list_debit_notes` | List debit notes (adjustments against bills). Filter by contact, date, branch, or project. |
 | `wafeq_list_expenses` | List expenses. Filter by account, contact, date, project, or paid-through account. |
 | `wafeq_list_invoices` | List invoices. Filter by status (DRAFT, SENT, FINALIZED), contact, date, or project. |
+| `wafeq_list_journal_line_items` | List journal line items for transaction-level detail across all journals. Uses cursor-based pagination. |
+| `wafeq_list_manual_journals` | List manual journals (adjusting entries, reclassifications, corrections). Filter by date or reference. |
+| `wafeq_list_payments` | List payments (cash movements for invoices, bills, credit/debit notes). Filter by contact, date, or project. |
+| `wafeq_get_balance_sheet` | Generate a balance sheet report at a specific date with optional period comparisons. |
+| `wafeq_get_profit_loss` | Generate a profit & loss (income statement) report for a date range grouped by month or year. |
 | `wafeq_get_trial_balance` | Generate trial balance report for a date range with debit/credit/balance totals. |
 
-All list tools support `page` and `page_size` parameters for pagination.
+All list tools support `page` and `page_size` parameters for pagination. `wafeq_list_journal_line_items` uses cursor-based pagination instead (`cursor` and `page_size`).
