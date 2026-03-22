@@ -542,3 +542,29 @@ export interface ManualJournal {
   created_ts: string;
   modified_ts: string;
 }
+
+// --- Manual Journal Create Input ---
+
+export interface CreateManualJournalLineItemInput {
+  account: string;
+  description: string;
+  amount: number;
+  amount_to_bcy: number;
+  currency: string;
+  contact?: string;
+  tax_rate?: string;
+  tax_amount?: number;
+  branch?: string | null;
+  project?: string | null;
+  cost_center?: string;
+  place_of_supply?: string;
+}
+
+export interface CreateManualJournalInput {
+  date: string;
+  line_items: CreateManualJournalLineItemInput[];
+  reference?: string;
+  notes?: string;
+  tax_amount_type?: "TAX_EXCLUSIVE" | "TAX_INCLUSIVE";
+  attachments?: string[];
+}

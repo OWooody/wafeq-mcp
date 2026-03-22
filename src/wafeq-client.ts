@@ -6,6 +6,7 @@ import type {
   BankAccount,
   Bill,
   Contact,
+  CreateManualJournalInput,
   CreditNote,
   DebitNote,
   Expense,
@@ -64,6 +65,59 @@ export class WafeqClient {
         const body = await response.text();
         throw new Error(
           `Wafeq API error (HTTP ${response.status}): ${body}`,
+        );
+      }
+
+      return (await response.json()) as T;
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new Error(
+          `Wafeq API request timed out after ${REQUEST_TIMEOUT_MS / 1000}s`,
+        );
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  private async postRequest<T>(
+    path: string,
+    body: unknown,
+    idempotencyKey?: string,
+  ): Promise<T> {
+    const url = `${BASE_URL}${path}`;
+
+    const headers: Record<string, string> = {
+      Authorization: `Api-Key ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+
+    if (idempotencyKey) {
+      headers["X-Wafeq-Idempotency-Key"] = idempotencyKey;
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      if (response.status === 429) {
+        throw new Error(
+          "Rate limited by Wafeq API, please retry shortly",
+        );
+      }
+
+      if (!response.ok) {
+        const responseBody = await response.text();
+        throw new Error(
+          `Wafeq API error (HTTP ${response.status}): ${responseBody}`,
         );
       }
 
@@ -185,6 +239,17 @@ export class WafeqClient {
     return this.request<PaginatedResponse<ManualJournal>>(
       "/manual-journals/",
       params,
+    );
+  }
+
+  async createManualJournal(
+    data: CreateManualJournalInput,
+    idempotencyKey?: string,
+  ): Promise<ManualJournal> {
+    return this.postRequest<ManualJournal>(
+      "/manual-journals/",
+      data,
+      idempotencyKey,
     );
   }
 }
