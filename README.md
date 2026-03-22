@@ -1,6 +1,6 @@
 # Wafeq MCP Server
 
-An MCP (Model Context Protocol) server that connects AI assistants to the [Wafeq](https://wafeq.com) accounting software API. Provides read-only access to accounts, contacts, invoices, bills, expenses, credit/debit notes, payments, manual journals, journal line items, and financial reports.
+An MCP (Model Context Protocol) server that connects AI assistants to the [Wafeq](https://wafeq.com) accounting software API. Provides access to accounts, contacts, invoices, bills, expenses, credit/debit notes, payments, manual journals, journal line items, and financial reports — plus the ability to create manual journal entries.
 
 ## Prerequisites
 
@@ -55,6 +55,7 @@ This opens a browser-based UI where you can list tools, invoke them with custom 
 | `wafeq_list_invoices` | List invoices. Filter by status (DRAFT, SENT, FINALIZED), contact, date, or project. |
 | `wafeq_list_journal_line_items` | List journal line items for transaction-level detail across all journals. Uses cursor-based pagination. |
 | `wafeq_list_manual_journals` | List manual journals (adjusting entries, reclassifications, corrections). Filter by date or reference. |
+| `wafeq_create_manual_journal` | Create a manual journal entry (adjusting entries, reclassifications, corrections). Includes client-side balance validation and idempotency key support. |
 | `wafeq_list_payments` | List payments (cash movements for invoices, bills, credit/debit notes). Filter by contact, date, or project. |
 | `wafeq_get_balance_sheet` | Generate a balance sheet report at a specific date with optional period comparisons. |
 | `wafeq_get_profit_loss` | Generate a profit & loss (income statement) report for a date range grouped by month or year. |
