@@ -1,6 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { WafeqClient } from "../wafeq-client.js";
+import {
+  AttachmentsSchema,
+  CurrencySchema,
+  DateSchema,
+  IdempotencyKeySchema,
+  TaxAmountTypeSchema,
+  toErrorResponse,
+  toTextResponse,
+  TransactionLineItemInputSchema,
+} from "./common.js";
 
 export function registerDebitNoteTools(
   server: McpServer,
@@ -46,6 +56,71 @@ export function registerDebitNoteTools(
             },
           ],
         };
+      }
+    },
+  );
+
+  server.tool(
+    "wafeq_create_debit_note",
+    "Create a debit note in Wafeq. Use this for supplier bill adjustments and purchase-side debit notes.",
+    {
+      debit_note_number: z.string().describe("Debit note number"),
+      debit_note_date: DateSchema.describe("Debit note date (YYYY-MM-DD)"),
+      contact: z.string().describe("Supplier/contact ID"),
+      currency: CurrencySchema,
+      line_items: z
+        .array(TransactionLineItemInputSchema)
+        .min(1)
+        .describe("Debit note line items"),
+      tax_amount_type: TaxAmountTypeSchema,
+      status: z
+        .enum(["DRAFT", "POSTED"])
+        .optional()
+        .describe("Debit note status"),
+      reference: z.string().optional().describe("Reference"),
+      notes: z.string().optional().describe("Notes"),
+      order_number: z.string().optional().describe("Order number"),
+      attachments: AttachmentsSchema,
+      branch: z.string().nullable().optional().describe("Branch ID"),
+      project: z.string().nullable().optional().describe("Project ID"),
+      exchange_rate: z
+        .number()
+        .nullable()
+        .optional()
+        .describe("Exchange rate to base currency"),
+      external_id: z.string().optional().describe("External identifier"),
+      custom_fields: z
+        .record(z.unknown())
+        .optional()
+        .describe("Custom field ID to value mapping"),
+      idempotency_key: IdempotencyKeySchema,
+    },
+    async (params) => {
+      try {
+        const result = await client.createDebitNote(
+          {
+            debit_note_number: params.debit_note_number,
+            debit_note_date: params.debit_note_date,
+            contact: params.contact,
+            currency: params.currency,
+            line_items: params.line_items,
+            tax_amount_type: params.tax_amount_type,
+            status: params.status,
+            reference: params.reference,
+            notes: params.notes,
+            order_number: params.order_number,
+            attachments: params.attachments,
+            branch: params.branch,
+            project: params.project,
+            exchange_rate: params.exchange_rate,
+            external_id: params.external_id,
+            custom_fields: params.custom_fields,
+          },
+          params.idempotency_key,
+        );
+        return toTextResponse(result);
+      } catch (error) {
+        return toErrorResponse(error);
       }
     },
   );

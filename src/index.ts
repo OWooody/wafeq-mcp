@@ -11,11 +11,13 @@ import { registerContactTools } from "./tools/contacts.js";
 import { registerCreditNoteTools } from "./tools/credit-notes.js";
 import { registerDebitNoteTools } from "./tools/debit-notes.js";
 import { registerExpenseTools } from "./tools/expenses.js";
+import { registerFileTools } from "./tools/files.js";
 import { registerInvoiceTools } from "./tools/invoices.js";
 import { registerJournalLineItemTools } from "./tools/journal-line-items.js";
 import { registerManualJournalTools } from "./tools/manual-journals.js";
 import { registerPaymentTools } from "./tools/payments.js";
 import { registerProfitLossTools } from "./tools/profit-loss.js";
+import { registerTaxRateTools } from "./tools/tax-rates.js";
 import { registerTrialBalanceTools } from "./tools/trial-balance.js";
 
 const apiKey = process.env.WAFEQ_API_KEY;
@@ -39,11 +41,13 @@ registerContactTools(server, client);
 registerCreditNoteTools(server, client);
 registerDebitNoteTools(server, client);
 registerExpenseTools(server, client);
+registerFileTools(server, client);
 registerInvoiceTools(server, client);
 registerJournalLineItemTools(server, client);
 registerManualJournalTools(server, client);
 registerPaymentTools(server, client);
 registerProfitLossTools(server, client);
+registerTaxRateTools(server, client);
 registerTrialBalanceTools(server, client);
 
 const transport = new StdioServerTransport();

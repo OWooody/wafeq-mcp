@@ -568,3 +568,221 @@ export interface CreateManualJournalInput {
   tax_amount_type?: "TAX_EXCLUSIVE" | "TAX_INCLUSIVE";
   attachments?: string[];
 }
+
+export type TaxAmountType = "TAX_EXCLUSIVE" | "TAX_INCLUSIVE";
+
+export interface CreateTransactionLineItemInput {
+  account: string;
+  description: string;
+  quantity?: number;
+  unit_amount: number;
+  tax_rate?: string;
+  cost_center?: string;
+  item?: string;
+  item_unit_of_measure?: string | null;
+  discount?: number | null;
+  order?: number;
+  custom_fields?: Record<string, unknown>;
+}
+
+export interface CreateBillInput {
+  bill_number: string;
+  bill_date: string;
+  bill_due_date: string;
+  contact: string;
+  currency: string;
+  line_items: CreateTransactionLineItemInput[];
+  tax_amount_type?: TaxAmountType;
+  status?: "DRAFT" | "AUTHORIZED" | "PAID";
+  reference?: string;
+  notes?: string;
+  order_number?: string;
+  attachments?: string[];
+  branch?: string | null;
+  project?: string | null;
+  exchange_rate?: number | null;
+  external_id?: string;
+  custom_fields?: Record<string, unknown>;
+}
+
+export interface CreateExpenseInput {
+  account: string;
+  amount: number;
+  currency: string;
+  date: string;
+  description: string;
+  paid_through_account: string;
+  tax_rate?: string;
+  tax_amount_type?: TaxAmountType;
+  contact?: string;
+  reference?: string;
+  attachments?: string[];
+  branch?: string | null;
+  project?: string | null;
+  cost_center?: string | null;
+  exchange_rate?: number | null;
+  external_id?: string;
+}
+
+export interface CreateInvoiceInput {
+  invoice_number: string;
+  invoice_date: string;
+  invoice_due_date: string;
+  contact: string;
+  currency: string;
+  line_items: CreateTransactionLineItemInput[];
+  tax_amount_type?: TaxAmountType;
+  status?: "DRAFT" | "SENT" | "FINALIZED";
+  language?: "ar" | "en";
+  reference?: string;
+  notes?: string;
+  purchase_order?: string;
+  attachments?: string[];
+  branch?: string | null;
+  project?: string | null;
+  warehouse?: string | null;
+  place_of_supply?: string;
+  discount_amount?: number;
+  discount_account?: string;
+  discount_tax_rate?: string;
+  discount_cost_center?: string;
+  exchange_rate?: number | null;
+  external_id?: string;
+  custom_fields?: Record<string, unknown>;
+}
+
+export interface CreateCreditNoteInput {
+  credit_note_number: string;
+  credit_note_date: string;
+  contact: string;
+  currency: string;
+  line_items: CreateTransactionLineItemInput[];
+  tax_amount_type?: TaxAmountType;
+  status?: "DRAFT" | "SENT" | "FINALIZED";
+  language?: "ar" | "en";
+  reference?: string;
+  notes?: string;
+  attachments?: string[];
+  branch?: string | null;
+  project?: string | null;
+  warehouse?: string | null;
+  place_of_supply?: string;
+  discount_cost_center?: string;
+  exchange_rate?: number | null;
+  external_id?: string;
+  custom_fields?: Record<string, unknown>;
+}
+
+export interface CreateDebitNoteInput {
+  debit_note_number: string;
+  debit_note_date: string;
+  contact: string;
+  currency: string;
+  line_items: CreateTransactionLineItemInput[];
+  tax_amount_type?: TaxAmountType;
+  status?: "DRAFT" | "POSTED";
+  reference?: string;
+  notes?: string;
+  order_number?: string;
+  attachments?: string[];
+  branch?: string | null;
+  project?: string | null;
+  exchange_rate?: number | null;
+  external_id?: string;
+  custom_fields?: Record<string, unknown>;
+}
+
+export interface CreateContactInput {
+  name: string;
+  relationship?: string[];
+  tax_registration_number?: string;
+  country?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  district?: string;
+  building_number?: string;
+  additional_number?: string;
+  postal_code?: string;
+  code?: string;
+  company_identification?: CompanyIdentification[];
+  attachments?: string[];
+  external_id?: string;
+  custom_fields?: Record<string, unknown>;
+}
+
+export interface CreatePaymentAllocationInput {
+  amount: number;
+  amount_to_pcy: number;
+}
+
+export interface CreateInvoicePaymentInput
+  extends CreatePaymentAllocationInput {
+  invoice: string;
+}
+
+export interface CreateBillPaymentInput extends CreatePaymentAllocationInput {
+  bill: string;
+}
+
+export interface CreateCreditNotePaymentInput
+  extends CreatePaymentAllocationInput {
+  credit_note: string;
+}
+
+export interface CreateDebitNotePaymentInput
+  extends CreatePaymentAllocationInput {
+  debit_note: string;
+}
+
+export interface CreatePaymentInput {
+  amount: number;
+  currency: string;
+  date: string;
+  paid_through_account: string;
+  contact?: string;
+  invoice_payments?: CreateInvoicePaymentInput[];
+  bill_payments?: CreateBillPaymentInput[];
+  credit_note_payments?: CreateCreditNotePaymentInput[];
+  debit_note_payments?: CreateDebitNotePaymentInput[];
+  payment_fees?: number;
+  payment_fees_account?: string | null;
+  reference?: string;
+  project?: string | null;
+  cost_center?: string | null;
+  exchange_rate?: number | null;
+  external_id?: string;
+}
+
+export interface UpdateManualJournalInput {
+  date?: string;
+  line_items?: CreateManualJournalLineItemInput[];
+  reference?: string;
+  notes?: string;
+  tax_amount_type?: TaxAmountType;
+  attachments?: string[];
+  external_id?: string;
+}
+
+export interface WafeqFile {
+  id: string;
+  file?: string;
+  file_size?: number | null;
+  mime_type: string;
+  original_filename?: string;
+  created_ts: string;
+  modified_ts: string;
+}
+
+export interface TaxRate {
+  id: string;
+  name: string;
+  friendly_name: string;
+  description?: string;
+  rate: number;
+  tax_type: "SALES" | "PURCHASES" | "REVERSE_CHARGE" | "OUT_OF_SCOPE";
+  external_id?: string;
+  created_ts: string;
+  modified_ts: string;
+}

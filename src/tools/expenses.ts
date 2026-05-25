@@ -1,6 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { WafeqClient } from "../wafeq-client.js";
+import {
+  AttachmentsSchema,
+  CurrencySchema,
+  DateSchema,
+  IdempotencyKeySchema,
+  TaxAmountTypeSchema,
+  toErrorResponse,
+  toTextResponse,
+} from "./common.js";
 
 export function registerExpenseTools(
   server: McpServer,
@@ -55,6 +64,64 @@ export function registerExpenseTools(
             },
           ],
         };
+      }
+    },
+  );
+
+  server.tool(
+    "wafeq_create_expense",
+    "Create a cash expense in Wafeq. Use this for already-paid purchases, bank fees, portal-paid government fees, and direct bank payments without a formal supplier bill.",
+    {
+      account: z.string().describe("Expense account ID"),
+      amount: z.number().positive().describe("Expense amount"),
+      currency: CurrencySchema,
+      date: DateSchema.describe("Expense date (YYYY-MM-DD)"),
+      description: z.string().describe("Expense description"),
+      paid_through_account: z
+        .string()
+        .describe("Payment-enabled account ID used to pay the expense"),
+      tax_rate: z.string().optional().describe("Tax rate ID"),
+      tax_amount_type: TaxAmountTypeSchema,
+      contact: z.string().optional().describe("Supplier/contact ID"),
+      reference: z.string().optional().describe("Reference"),
+      attachments: AttachmentsSchema,
+      branch: z.string().nullable().optional().describe("Branch ID"),
+      project: z.string().nullable().optional().describe("Project ID"),
+      cost_center: z.string().nullable().optional().describe("Cost center ID"),
+      exchange_rate: z
+        .number()
+        .nullable()
+        .optional()
+        .describe("Exchange rate to base currency"),
+      external_id: z.string().optional().describe("External identifier"),
+      idempotency_key: IdempotencyKeySchema,
+    },
+    async (params) => {
+      try {
+        const result = await client.createExpense(
+          {
+            account: params.account,
+            amount: params.amount,
+            currency: params.currency,
+            date: params.date,
+            description: params.description,
+            paid_through_account: params.paid_through_account,
+            tax_rate: params.tax_rate,
+            tax_amount_type: params.tax_amount_type,
+            contact: params.contact,
+            reference: params.reference,
+            attachments: params.attachments,
+            branch: params.branch,
+            project: params.project,
+            cost_center: params.cost_center,
+            exchange_rate: params.exchange_rate,
+            external_id: params.external_id,
+          },
+          params.idempotency_key,
+        );
+        return toTextResponse(result);
+      } catch (error) {
+        return toErrorResponse(error);
       }
     },
   );

@@ -1,6 +1,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { WafeqClient } from "../wafeq-client.js";
+import {
+  IdempotencyKeySchema,
+  toErrorResponse,
+  toTextResponse,
+} from "./common.js";
 
 const ManualJournalLineItemInputSchema = z.object({
   account: z.string().describe("Account ID for this line item"),
@@ -162,6 +167,70 @@ export function registerManualJournalTools(
             },
           ],
         };
+      }
+    },
+  );
+
+  server.tool(
+    "wafeq_update_manual_journal",
+    "Partially update an existing manual journal in Wafeq. Use for correcting rare posting mistakes without reversing and reposting. If line_items are provided, they must balance.",
+    {
+      id: z.string().describe("Manual journal ID"),
+      date: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format")
+        .optional()
+        .describe("Journal date (YYYY-MM-DD)"),
+      line_items: z
+        .array(ManualJournalLineItemInputSchema)
+        .min(1)
+        .optional()
+        .describe("Replacement line items — must balance if provided"),
+      reference: z.string().optional().describe("Reference for the journal"),
+      notes: z.string().optional().describe("Notes for the journal"),
+      tax_amount_type: z
+        .enum(["TAX_EXCLUSIVE", "TAX_INCLUSIVE"])
+        .optional()
+        .describe("Tax amount type"),
+      attachments: z
+        .array(z.string())
+        .optional()
+        .describe("Attachment file IDs linked to this journal"),
+      external_id: z.string().optional().describe("External identifier"),
+      idempotency_key: IdempotencyKeySchema,
+    },
+    async (params) => {
+      try {
+        if (params.line_items) {
+          const sum = params.line_items.reduce(
+            (acc, item) => acc + item.amount,
+            0,
+          );
+          if (Math.abs(sum) > 0.001) {
+            return toErrorResponse(
+              new Error(
+                `Line items do not balance. Total is ${sum} but must be 0 (positive = debit, negative = credit).`,
+              ),
+            );
+          }
+        }
+
+        const result = await client.updateManualJournal(
+          params.id,
+          {
+            date: params.date,
+            line_items: params.line_items,
+            reference: params.reference,
+            notes: params.notes,
+            tax_amount_type: params.tax_amount_type,
+            attachments: params.attachments,
+            external_id: params.external_id,
+          },
+          params.idempotency_key,
+        );
+        return toTextResponse(result);
+      } catch (error) {
+        return toErrorResponse(error);
       }
     },
   );
